@@ -36,3 +36,14 @@
     transform: rotate(360deg);
   }
 }
+
+.board-row{
+  display: flex;
+}
+.board-cell{
+  /* background: #61dafb; */
+  padding: 5px;
+  margin: 5px;
+  display: flex;
+  flex-direction: row;
+}

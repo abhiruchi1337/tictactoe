@@ -1,5 +1,6 @@
-import React,{useState} from "react"
+import React,{useState, useEffect} from "react"
 import BoardCell from "./BoardCell"
+
 // import { truncate } from "fs";
 
 function Board(){
@@ -19,42 +20,94 @@ function Board(){
         [0,4,8],[2,4,6]//diags
     ]
 
+    var userTurn=true
+
+    function play(xo, id){
+        setBoard(prevBoard =>
+            {
+                let nboard=prevBoard.slice()
+                nboard[id]=xo
+                return nboard
+            }
+        )
+    }
+
     function handleClick(id){
         console.log("clicked", id)
         //this is pretty garbage code, there might be a better way
         if (board[id]=="_"){//if cell isn't already filled
-            setBoard(prevBoard =>
-                {
-                    let nboard=prevBoard.slice()
-                    nboard[id]="X"
-                    return nboard
-                }
-            )
+            play("X",id)
+            userTurn=false
+            console.log("user turn end", userTurn)
         }
-        console.log(board)
-        computerMove()//BUG: doesnt happen on immediate winning click but on the next one. may have to call separately outside of handleclick
-        //!!!!!!USEEFFECT MAY WORK
     }
 
-    // function indexToCoordinates(id){
-    //     return [Math.floor(id/3),id%3]
-    // }
+    useEffect(()=>{//computermove each time board updated? potential problem-infinite move, since computer move will also update
+        console.log(board)
+        console.log("useeffect called, user turn", userTurn)//????? why userTurn true here?
+        if (!userTurn){
+            computerMove()    
+        }
+        
+        userTurn=true
+        console.log('user turn:', userTurn)
+    },[board, userTurn])
 
-    function checkWin(){
+    
+
+    function checkWin(){//not cleanest
         for (const w of wins){
             // console.log(w)
             
             if (board[w[0]]!="_" && board[w[1]]==board[w[0]] && board[w[2]]==board[w[1]]){
-                console.log(true)
-                return true
+                console.log('win condition',true)
+                return board[w[0]]
             }
         }
-        console.log(false)
+        console.log('win condition:',false)
         return false
     }
 
+
+    function availableMoves(){
+        return board.map((cell, id)=>{
+            if (cell=="_") return id
+        }).filter( (v) => {return v>=0} )
+    }
+
     function computerMove(){
-        checkWin()
+        let compTurn=true
+        let ans=checkWin()
+        if (ans){
+            console.log('game end',ans)
+            return
+        }
+        console.log('computer does a move')
+        
+        var options=availableMoves()
+        console.log('availablemoves',availableMoves())
+
+        for (var i=0;i<options.length;i++){
+            console.log('checking for win')
+            let tempboard=board.slice()
+            let oldcell=tempboard[options[i]]
+            tempboard[options[i]]="O"
+            if (checkWin()=="O"){
+                play("O", options[i])
+                compTurn=false
+                break
+            }
+            else{
+                tempboard[options[i]]=oldcell
+            }
+        }
+        if (compTurn){//didn't find a winning 
+        console.log('no win found, going random')
+        let randind= Math.floor(Math.random()*options.length)
+        play("O", options[randind])
+        //random no options.length, play with options[randno]
+        }
+
     }
 
     return(

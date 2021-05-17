@@ -15,17 +15,21 @@ function Board(){
         "_","_","_"
     ])
 
+    var [userTurn, setUserTurn]=useState(true)
+
+    // var [gameEnd, setGameEnd]=useState(false)
+
     const wins=[[0,1,2],[3,4,5],[6,7,8],//rows
         [0,3,6],[1,4,7],[2,5,8],//cols
         [0,4,8],[2,4,6]//diags
     ]
 
-    var userTurn=true
+
 
     function play(xo, id){
         setBoard(prevBoard =>
             {
-                let nboard=prevBoard.slice()
+                let nboard=prevBoard.slice()//probably not the best way
                 nboard[id]=xo
                 return nboard
             }
@@ -37,31 +41,31 @@ function Board(){
         //this is pretty garbage code, there might be a better way
         if (board[id]=="_"){//if cell isn't already filled
             play("X",id)
-            userTurn=false
+            setUserTurn(()=>{return false})
             console.log("user turn end", userTurn)
         }
     }
 
-    useEffect(()=>{//computermove each time board updated? potential problem-infinite move, since computer move will also update
+    useEffect(()=>{//computermove each time board updated? potential problem-infinite move, since computer move will also update the board
         console.log(board)
-        console.log("useeffect called, user turn", userTurn)//????? why userTurn true here?
+        console.log("useeffect called, user turn", userTurn)//????? why userTurn true here? GAME END SITUATION TODO RESOLVE
         if (!userTurn){
             computerMove()    
         }
         
-        userTurn=true
+        setUserTurn(()=>{return true})
         console.log('user turn:', userTurn)
     },[board, userTurn])
 
     
 
-    function checkWin(){//not cleanest
+    function checkWin(boardview){//not cleanest
         for (const w of wins){
             // console.log(w)
             
-            if (board[w[0]]!="_" && board[w[1]]==board[w[0]] && board[w[2]]==board[w[1]]){
+            if (boardview[w[0]]!="_" && boardview[w[1]]==boardview[w[0]] && boardview[w[2]]==boardview[w[1]]){
                 console.log('win condition',true)
-                return board[w[0]]
+                return boardview[w[0]]
             }
         }
         console.log('win condition:',false)
@@ -77,7 +81,7 @@ function Board(){
 
     function computerMove(){
         let compTurn=true
-        let ans=checkWin()
+        let ans=checkWin(board)
         if (ans){
             console.log('game end',ans)
             return
@@ -92,9 +96,14 @@ function Board(){
             let tempboard=board.slice()
             let oldcell=tempboard[options[i]]
             tempboard[options[i]]="O"
-            if (checkWin()=="O"){
+            console.log('replacing',oldcell,'at',options[i],'with O')
+            console.log("tempboard:",tempboard)
+            if (checkWin(tempboard)=="O"){
                 play("O", options[i])
                 compTurn=false
+                //TODO: something to end game here
+                setUserTurn(()=>{return true})
+                // setGameEnd(()=>{return true})
                 break
             }
             else{

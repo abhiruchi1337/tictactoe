@@ -17,7 +17,7 @@ function Board(){
 
     var [userTurn, setUserTurn]=useState(true)
 
-    // var [gameEnd, setGameEnd]=useState(false)
+    var [gameEnd, setGameEnd]=useState(false)
 
     const wins=[[0,1,2],[3,4,5],[6,7,8],//rows
         [0,3,6],[1,4,7],[2,5,8],//cols
@@ -37,24 +37,31 @@ function Board(){
     }
 
     function handleClick(id){
+        
         console.log("clicked", id)
-        //this is pretty garbage code, there might be a better way
-        if (board[id]=="_"){//if cell isn't already filled
-            play("X",id)
-            setUserTurn(()=>{return false})
-            console.log("user turn end", userTurn)
+        if (!gameEnd){
+            //this is pretty garbage code, there might be a better way
+            if (board[id]=="_"){//if cell isn't already filled
+                play("X",id)
+                setUserTurn(()=>{return false})
+                console.log("user turn end", userTurn)
+            }
         }
     }
 
     useEffect(()=>{//computermove each time board updated? potential problem-infinite move, since computer move will also update the board
         console.log(board)
-        console.log("useeffect called, user turn", userTurn)//????? why userTurn true here? GAME END SITUATION TODO RESOLVE
+        console.log("useeffect called, user turn", userTurn, "game end", gameEnd)
         if (!userTurn){
             computerMove()    
         }
-        
-        setUserTurn(()=>{return true})
-        console.log('user turn:', userTurn)
+        if (!gameEnd){
+            setUserTurn(()=>{return true})
+            console.log('user turn:', userTurn)
+        }
+        else{
+            console.log("A WINNAR IS YOU, ",gameEnd)
+        }
     },[board, userTurn])
 
     
@@ -81,9 +88,10 @@ function Board(){
 
     function computerMove(){
         let compTurn=true
-        let ans=checkWin(board)
+        let ans=checkWin(board)//this check if user wins?
         if (ans){
             console.log('game end',ans)
+            setGameEnd('X')
             return
         }
         console.log('computer does a move')
@@ -103,7 +111,7 @@ function Board(){
                 compTurn=false
                 //TODO: something to end game here
                 setUserTurn(()=>{return true})
-                // setGameEnd(()=>{return true})
+                setGameEnd(()=>{return 'O'})
                 break
             }
             else{
@@ -120,6 +128,8 @@ function Board(){
     }
 
     return(
+        <div className="gamecontainer">
+
         <div className="board-grid">
         <div className="board-row row1">
         <BoardCell id="1" onClick={()=>{handleClick(0)}} cellValue={board[0]}/>
@@ -148,6 +158,10 @@ function Board(){
         </div> */}
 
         
+        </div>
+        <div className="result">
+        <h3> winner:{gameEnd?gameEnd:"?"}</h3>
+        </div>
         </div>
     )
 }

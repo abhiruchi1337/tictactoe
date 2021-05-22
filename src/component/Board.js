@@ -1,6 +1,8 @@
 import React,{useState, useEffect} from "react"
 import BoardCell from "./BoardCell"
 
+import PlayerSelect from "./PlayerSelect"
+
 // import { truncate } from "fs";
 
 function Board(){
@@ -18,6 +20,10 @@ function Board(){
     var [userTurn, setUserTurn]=useState(true)
 
     var [gameEnd, setGameEnd]=useState(false)
+
+    var [playerLetter, setPlayerLetter] = useState("X")
+
+    var [compLetter, setCompLetter] = useState("O")
 
     const wins=[[0,1,2],[3,4,5],[6,7,8],//rows
         [0,3,6],[1,4,7],[2,5,8],//cols
@@ -42,7 +48,7 @@ function Board(){
         if (!gameEnd){
             //this is pretty garbage code, there might be a better way
             if (board[id]=="_"){//if cell isn't already filled
-                play("X",id)
+                play(playerLetter, id)
                 setUserTurn(()=>{return false})
                 console.log("user turn end", userTurn)
             }
@@ -91,7 +97,7 @@ function Board(){
         let ans=checkWin(board)//this check if user wins?
         if (ans){
             console.log('game end',ans)
-            setGameEnd('X')
+            setGameEnd(playerLetter)
             return
         }
         console.log('computer does a move')
@@ -103,15 +109,15 @@ function Board(){
             console.log('checking for win')
             let tempboard=board.slice()
             let oldcell=tempboard[options[i]]
-            tempboard[options[i]]="O"
+            tempboard[options[i]]=compLetter
             console.log('replacing',oldcell,'at',options[i],'with O')
             console.log("tempboard:",tempboard)
-            if (checkWin(tempboard)=="O"){
-                play("O", options[i])
+            if (checkWin(tempboard)==compLetter){
+                play(compLetter, options[i])
                 compTurn=false
                 //TODO: something to end game here
                 setUserTurn(()=>{return true})
-                setGameEnd(()=>{return 'O'})
+                setGameEnd(()=>{return compLetter})
                 break
             }
             else{
@@ -121,7 +127,7 @@ function Board(){
         if (compTurn){//didn't find a winning 
         console.log('no win found, going random')
         let randind= Math.floor(Math.random()*options.length)
-        play("O", options[randind])
+        play(compLetter, options[randind])
         //random no options.length, play with options[randno]
         }
 
@@ -129,6 +135,8 @@ function Board(){
 
     return(
         <div className="gamecontainer">
+
+        <PlayerSelect playerLetter={playerLetter} setPlayer={setPlayerLetter} setComp={setCompLetter}/>
 
         <div className="board-grid">
         <div className="board-row row1">

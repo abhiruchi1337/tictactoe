@@ -1,4 +1,4 @@
-import React,{useState, useEffect} from "react"
+import React,{useState} from "react"
 
 // import { truncate } from "fs";
 
@@ -10,7 +10,7 @@ function PlayerSelect(props){
 
     function handleSubmit(e){
         e.preventDefault()
-        let comp= (player=="X"? "O": "X")
+        let comp= (player==="X"? "O": "X")
         props.setPlayer(player)
         props.setComp(comp)
     }

@@ -3,14 +3,11 @@ import BoardCell from "./BoardCell"
 
 import PlayerSelect from "./PlayerSelect"
 
-// import { truncate } from "fs";
+//TODO: DISABLE PLAYERSELECT if game is ongoing, disable board if playerselect is active (new game hai to)
+//add new game button to reset and start again
 
 function Board(){
-    // var [board, setBoard]=useState([
-    //     ["_","_","_"],
-    //     ["_","_","_"],
-    //     ["_","_","_"]
-    // ])
+    
     var [board, setBoard]=useState([
         "_","_","_",
         "_","_","_",
@@ -47,7 +44,7 @@ function Board(){
         console.log("clicked", id)
         if (!gameEnd){
             //this is pretty garbage code, there might be a better way
-            if (board[id]=="_"){//if cell isn't already filled
+            if (board[id]==="_"){//if cell isn't already filled
                 play(playerLetter, id)
                 setUserTurn(()=>{return false})
                 console.log("user turn end", userTurn)
@@ -76,7 +73,7 @@ function Board(){
         for (const w of wins){
             // console.log(w)
             
-            if (boardview[w[0]]!="_" && boardview[w[1]]==boardview[w[0]] && boardview[w[2]]==boardview[w[1]]){
+            if (boardview[w[0]]!=="_" && boardview[w[1]]===boardview[w[0]] && boardview[w[2]]===boardview[w[1]]){
                 console.log('win condition',true)
                 return boardview[w[0]]
             }
@@ -88,7 +85,7 @@ function Board(){
 
     function availableMoves(){
         return board.map((cell, id)=>{
-            if (cell=="_") return id
+            if (cell==="_") return id
         }).filter( (v) => {return v>=0} )
     }
 
@@ -112,7 +109,7 @@ function Board(){
             tempboard[options[i]]=compLetter
             console.log('replacing',oldcell,'at',options[i],'with O')
             console.log("tempboard:",tempboard)
-            if (checkWin(tempboard)==compLetter){
+            if (checkWin(tempboard)===compLetter){
                 play(compLetter, options[i])
                 compTurn=false
                 //TODO: something to end game here

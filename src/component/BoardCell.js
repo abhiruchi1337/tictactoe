@@ -1,4 +1,4 @@
-import React, {useState} from "react"
+import React from "react"
 
 //TODO:
 //figure out styling red green? maybe useEffect and another state variable for cellvalue?(didnt work first time)
@@ -6,13 +6,13 @@ import React, {useState} from "react"
 function BoardCell(props){
     
 
-    function cellColor(){
+    function setCellColor(){
         // console.log("clicked cell")
-        cellColor=""
-        if (props.cellValue=="X"){
+        var cellColor=""
+        if (props.cellValue==="X"){
             cellColor="red"
         }
-        else if (props.cellValue=="O"){
+        else if (props.cellValue==="O"){
             cellColor='green'
         }
         return cellColor
@@ -20,7 +20,7 @@ function BoardCell(props){
     }
 
     return(
-        <div className="board-cell" style={{color: cellColor()}} onClick={props.onClick}>{props.cellValue}</div>
+        <div className="board-cell" style={{color: setCellColor()}} onClick={props.onClick}>{props.cellValue}</div>
     )
 }
 
